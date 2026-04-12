@@ -50,6 +50,8 @@ def api_request(url, data=None, headers=None, method=None):
         data = data.encode("utf-8")
 
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    if "User-Agent" not in headers:
+        req.add_header("User-Agent", "Mozilla/5.0 (compatible; WeeklyReport/1.0)")
     try:
         with urllib.request.urlopen(req) as resp:
             return json.loads(resp.read().decode("utf-8"))
@@ -108,6 +110,22 @@ def sheets_append(sheets_token, range_, values):
     return api_request(url, data={"values": values},
                        headers={"Authorization": f"Bearer {sheets_token}"},
                        method="POST")
+
+
+def ensure_sheet_exists(sheets_token, title):
+    """Create a sheet tab if it doesn't exist."""
+    # Check existing tabs
+    url = f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}?fields=sheets.properties.title"
+    meta = api_request(url, headers={"Authorization": f"Bearer {sheets_token}"})
+    existing = [s["properties"]["title"] for s in meta.get("sheets", [])]
+    if title in existing:
+        return
+    # Create the tab
+    url = f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}:batchUpdate"
+    api_request(url, data={
+        "requests": [{"addSheet": {"properties": {"title": title}}}]
+    }, headers={"Authorization": f"Bearer {sheets_token}"})
+    print(f"  Created missing tab: '{title}'")
 
 
 def sheets_clear(sheets_token, range_):
@@ -503,6 +521,12 @@ def main():
     except Exception as e:
         print(f"FATAL: Could not get Google access tokens: {e}")
         return
+
+    # 1b. Ensure required tabs exist
+    try:
+        ensure_sheet_exists(sheets_token, "Update Log")
+    except Exception as e:
+        print(f"  WARNING: Could not ensure Update Log tab: {e}")
 
     # 2. Read last week's data from Update Log
     print("Reading last week's data from Update Log...")
