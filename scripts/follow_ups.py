@@ -212,9 +212,19 @@ def has_genuine_reply(inbox_messages: list) -> bool:
     Return True if the thread has a genuine reply from the recipient.
     Return False if the only inbox messages are auto-responders / OOO / bounces.
 
-    TODO (Justin): implement this — see Task 6 for guidance.
+    Uses the RFC-standard Auto-Submitted and Precedence headers (RFC 3834).
     """
-    raise NotImplementedError("See Task 6 — implement reply detection heuristic")
+    for m in inbox_messages:
+        headers = {
+            h["name"].lower(): h["value"].lower()
+            for h in m.get("payload", {}).get("headers", [])
+        }
+        if headers.get("auto-submitted", "no") != "no":
+            continue
+        if headers.get("precedence", "") in ("auto_reply", "bulk", "list"):
+            continue
+        return True
+    return False
 
 
 def decide_action(state: dict, current_step: int, now: datetime) -> str:
