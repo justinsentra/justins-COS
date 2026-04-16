@@ -1,0 +1,37 @@
+name: Draft Follow-Ups
+
+on:
+  schedule:
+    # Daily at 13:00 UTC — 9am ET during EDT, 8am ET during EST
+    - cron: "0 13 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, don't create drafts or update sheet"
+        type: boolean
+        default: false
+
+env:
+  SHEET_ID: "1GCrRrEM8uT-m40PTkMXhmqjLDYgt_b0qk7NSD0B4VUk"
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+  SHEETS_REFRESH_TOKEN: ${{ secrets.SHEETS_REFRESH_TOKEN }}
+  SENDER_EMAIL: "justin@sentra.app"
+  DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+
+jobs:
+  follow_ups:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run unit tests
+        run: python3 -m unittest scripts.tests.test_follow_ups -v
+
+      - name: Draft follow-ups
+        run: python3 scripts/follow_ups.py
