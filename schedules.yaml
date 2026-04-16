@@ -42,12 +42,6 @@ schedules:
     enabled: false
     notes: "Surface contacts that need attention"
 
-  - name: "Inbound Follow-Ups"
-    skill: "scripts/follow_ups.py (GitHub Actions)"
-    frequency: "Weekdays at 13:00 UTC (9am EDT / 8am EST)"
-    enabled: true
-    notes: "Autonomous. Reads Leads sheet; for any qualified lead with no reply in 3 days, drafts the next email in-thread via Gmail API (visible in Superhuman drafts). Primary outreach remains manual via /process-inbound."
-
 # To set up automated scheduling, you need a way to trigger
 # Claude Code sessions on a schedule. Options:
 #
