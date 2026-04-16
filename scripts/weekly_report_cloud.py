@@ -14,13 +14,15 @@ from datetime import datetime, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-# ── Credentials ───────────────────────────────────────────────────────────────
+# ── Credentials (from environment variables) ─────────────────────────────────
 
-INSTANTLY_API_KEY = "REDACTED_INSTANTLY_API_KEY"
-GOOGLE_CLIENT_ID = "REDACTED_GOOGLE_CLIENT_ID"
-GOOGLE_CLIENT_SECRET = "REDACTED_GOOGLE_CLIENT_SECRET"
-GMAIL_REFRESH_TOKEN = "REDACTED_REFRESH_TOKEN"
-SHEETS_REFRESH_TOKEN = "REDACTED_REFRESH_TOKEN"
+import os
+
+INSTANTLY_API_KEY = os.environ["INSTANTLY_API_KEY"]
+GOOGLE_CLIENT_ID = os.environ["GOOGLE_CLIENT_ID"]
+GOOGLE_CLIENT_SECRET = os.environ["GOOGLE_CLIENT_SECRET"]
+GMAIL_REFRESH_TOKEN = os.environ["GMAIL_REFRESH_TOKEN"]
+SHEETS_REFRESH_TOKEN = os.environ["SHEETS_REFRESH_TOKEN"]
 SHEET_ID = "16zFEGHetXFc-H7E2xaoP7yQ-W4ZHeiEVFGen4-6qJiM"
 SENDER_EMAIL = "justin@sentra.app"
 RECIPIENT_EMAIL = "justin@sentra.app"
